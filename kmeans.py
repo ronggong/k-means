@@ -52,13 +52,19 @@ def error_kmeans(input_data_points, centers, k):
     """
     distance = np.zeros((input_array.shape[0], k))
     err = np.zeros(input_data_points.shape[0])
-    for i in range(k):
-        distance[:, i] = dis_euclidian(input_data_points, centers[i])
-    clusters = np.argmin(distance, axis=1)
+    clusters = expectation(input_data_points, centers, distance, k)
     for i in range(k):
         err[clusters==i] = distance[clusters==i, i]
     return np.sum(err), clusters
 
+def expectation(input_data_points, centers, distance, k):
+    """
+    Expectation helper function
+    """
+    for i in range(k):
+        distance[:, i] = dis_euclidian(input_data_points, centers[i])
+    clusters = np.argmin(distance, axis=1)
+    return clusters
 
 def kmeans(input_array, cluster_centers, k):
     """
@@ -77,9 +83,7 @@ def kmeans(input_array, cluster_centers, k):
     err = 1.0
     while err != 0:
         # expectation
-        for i in range(k):
-            distance[:, i] = dis_euclidian(input_array, cluster_centers[i])
-        clusters = np.argmin(distance, axis=1)
+        clusters = expectation(input_array, cluster_centers, distance, k)
 
         # maximisation
         cluster_centers_old = np.copy(cluster_centers)
